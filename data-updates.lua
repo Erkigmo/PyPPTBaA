@@ -37,6 +37,13 @@ if mods['boblogistics'] then
     set_underground_recipe("ultimate-underground-belt", "ultimate-transport-belt", "turbo-underground-belt", "turbo-transport-belt")
 end
 
+----------------------------------------------------
+-- CACHE FILES
+----------------------------------------------------
+
 if register_cache_file ~= nil then
-    register_cache_file({'pycoalprocessing', 'pyfusionenergy', 'pyindustry', 'pyrawores', 'pypetroleumhandling', 'pyalienlife', 'pyhightech', 'pyalternativeenergy', 'PyCoalTBaA'}, "__PyPPTBaA__/cached-configs/pyalienlife+pyalternativeenergy+pycoalprocessing+PyCoalTBaA+pyfusionenergy+pyhightech+pyindustry+pypetroleumhandling+pyrawores.lua")
+    register_cache_file({'pycoalprocessing', 'pyfusionenergy', 'pyindustry', 'pyrawores', 'pypetroleumhandling', 'pyalienlife', 'pyhightech', 'pyalternativeenergy', 'PyCoalTBaA', 'PyPPTBaA', 'bobsmodules4py'}, "__PyPPTBaA__/cached-configs/bobsmodules4py+pyalienlife+pyalternativeenergy+pycoalprocessing+PyCoalTBaA+pyfusionenergy+pyhightech+pyindustry+pypetroleumhandling+PyPPTBaA+pyrawores.lua")
+    register_cache_file({'pycoalprocessing', 'pyfusionenergy', 'pyindustry', 'pyrawores', 'pypetroleumhandling', 'pyhightech', 'PyCoalTBaA', 'PyPPTBaA', 'bobsmodules4py'}, "__PyPPTBaA__/cached-configs/bobsmodules4py+pycoalprocessing+PyCoalTBaA+pyfusionenergy+pyhightech+pyindustry+pypetroleumhandling+PyPPTBaA+pyrawores.lua")
+    register_cache_file({'pycoalprocessing', 'pyfusionenergy', 'pyindustry', 'PyCoalTBaA', 'PyPPTBaA', 'bobsmodules4py'}, "__PyPPTBaA__/cached-configs/bobsmodules4py+pycoalprocessing+PyCoalTBaA+pyfusionenergy+pyindustry+PyPPTBaA.lua")
+    register_cache_file({'pycoalprocessing', 'PyCoalTBaA', 'PyPPTBaA', 'bobsmodules4py'}, "__PyPPTBaA__/cached-configs/bobsmodules4py+pycoalprocessing+PyCoalTBaA+PyPPTBaA.lua")
 end

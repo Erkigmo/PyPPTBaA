@@ -6,7 +6,6 @@ require('__stdlib__/stdlib/data/data').Util.create_data_globals()
 local table = require('__stdlib__/stdlib/utils/table')
 local config = require "__pypostprocessing__/prototypes/config"
 
-require('prototypes/functions/global-item-replacer')
 
 if data.raw.technology[settings.startup["log-technology"].value] ~= nil then
     log(serpent.block(data.raw.technology[settings.startup["log-technology"].value]))
@@ -26,77 +25,25 @@ if debugmode.techcheck then
         ::continue::
     end
 end
+
+----------------------------------------------------
+-- PARSER
+----------------------------------------------------
+
+local data_parser = require('prototypes/functions/data_parser')
+local parser = data_parser.create()
+parser:run()
+
+----------------------------------------------------
+-- RECIPE CHANGES
+----------------------------------------------------
+
+require('prototypes/functions/global-item-replacer')
+
 ----------------------------------------------------
 -- TECHNOLOGY CHANGES
 ----------------------------------------------------
 
-for name, technology in pairs(data.raw.technology) do
-    local keep = technology.normal or technology.expensive
-    if keep then
-        for k,v in pairs(keep) do
-            technology[k] = v
-        end
-        technology.normal = nil
-        technology.expensive = nil
-    end
-end
-
-for _, tech in pairs(data.raw.technology) do
-    if tech.unit.ingredients then
-        local inglist = {}
-        for i, ingredient in pairs(tech.unit.ingredients) do
-            table.insert(inglist, ingredient)
-            tech.unit.ingredients[i] = nil
-        end
-        for _, ing in pairs(inglist) do 
-            table.insert(tech.unit.ingredients, { type = "item", name = ing[1], amount = 1 })
-        end
-    end
-end
-
-for _, tech in pairs(data.raw.technology) do
-    if tech.unit == nil then
-        goto continue
-    end
-
-    -- Holds the final ingredients for the current tech
-    local tech_ingredients_to_use = {}
-
-    local add_military_science = false
-    local highest_science_pack = 'automation-science-pack'
-    -- Add the current ingredients for the technology
-    for _, ingredient in pairs(tech.unit and tech.unit.ingredients or {}) do
-        local pack = ingredient.name or ingredient[1]
-        if pack ~= nil then
-            if pack == "military-science-pack" and not config.TC_MIL_SCIENCE_IS_PROGRESSION_PACK then
-                add_military_science = true
-            elseif config.SCIENCE_PACK_INDEX[pack] then
-                if config.SCIENCE_PACK_INDEX[highest_science_pack] < config.SCIENCE_PACK_INDEX[pack] then
-                    highest_science_pack = pack
-                end
-            else -- not one of ours, sir
-                tech_ingredients_to_use[pack] = ingredient.amount or ingredient[2]
-            end
-        end
-    end
-
-    -- Add any missing ingredients that we want present
-    for _, ingredient in pairs(config.TC_TECH_INGREDIENTS_PER_LEVEL[highest_science_pack]) do
-        tech_ingredients_to_use[ingredient.name or ingredient[1]] = ingredient.amount or ingredient[2]
-    end
-    -- Add military ingredients if applicable
-    if add_military_science then
-        tech_ingredients_to_use["military-science-pack"] = config.TC_MIL_SCIENCE_PACK_COUNT_PER_LEVEL[highest_science_pack]
-    end
-    -- Push a copy of our final list to .ingredients
-    tech.unit.ingredients = {}
-    for pack_name, pack_amount in pairs(tech_ingredients_to_use) do
-        tech.unit.ingredients[#tech.unit.ingredients+1] = {name = pack_name, amount = pack_amount}
-    end
-    ::continue::
-end
-
---[[
 if mods['bobtech'] 
 and data.raw.item["alien-artifact"]
 and data.raw.item["alien-artifact-blue"]
@@ -108,21 +55,25 @@ and data.raw.item["alien-artifact-red"]
 then
     for t, tech in pairs(data.raw.technology) do
         if tech.unit.ingredients then
-            for i, ingredient in pairs(tech.unit.ingredients) do
+            for _, ingredient in pairs(tech.unit.ingredients) do
                 if ingredient.name == 'science-pack-gold' then
-                    TECHNOLOGY(tech):remove_pack('automation-science-pack')
-                    goto continue
+                    for i, ing in pairs(tech.unit.ingredients) do
+                        if ing.name == 'automation-science-pack' then
+                            tech.unit.ingredients[i] = nil
+                            goto continue
+                        end
+                    end
                 end
             end
         end
         ::continue::
     end
 end
-]]--
 
 ----------------------------------------------------
 -- RECIPE INGREDIENTS DEDUPER
 ----------------------------------------------------
+
 for i, ings in pairs(data.raw.recipe) do
     --log(serpent.block(ings))
     local inglist = {}
@@ -211,11 +162,13 @@ for i, ings in pairs(data.raw.recipe) do
     end
 end
 
-data.raw.item['electronic-circuit'].icon_size = 64
-data.raw.item['electronic-circuit'].icon = "__pyhightechgraphics__/graphics/icons/circuit-board-1.png"
-data.raw.item['advanced-circuit'].icon_size = 64
-data.raw.item['advanced-circuit'].icon = "__pyhightechgraphics__/graphics/icons/circuit-board-2.png"
-data.raw.item['processing-unit'].icon_size = 64
-data.raw.item['processing-unit'].icon = "__pyhightechgraphics__/graphics/icons/circuit-board-3.png"
-data.raw.item['intelligent-unit'].icon_size = 32
-data.raw.item['intelligent-unit'].icon = "__pyhightechgraphics__/graphics/icons/intelligent-unit.png"
+if mods['pyhightech'] and mods['bobelectronics'] then
+    data.raw.item['electronic-circuit'].icon_size = 64
+    data.raw.item['electronic-circuit'].icon = "__pyhightechgraphics__/graphics/icons/circuit-board-1.png"
+    data.raw.item['advanced-circuit'].icon_size = 64
+    data.raw.item['advanced-circuit'].icon = "__pyhightechgraphics__/graphics/icons/circuit-board-2.png"
+    data.raw.item['processing-unit'].icon_size = 64
+    data.raw.item['processing-unit'].icon = "__pyhightechgraphics__/graphics/icons/circuit-board-3.png"
+    data.raw.item['intelligent-unit'].icon_size = 32
+    data.raw.item['intelligent-unit'].icon = "__pyhightechgraphics__/graphics/icons/intelligent-unit.png"
+end
