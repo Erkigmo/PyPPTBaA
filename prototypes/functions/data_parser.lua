@@ -73,6 +73,7 @@ function data_parser:parse_tech(tech)
         tech.normal = nil
         tech.expensive = nil
     end
+     --[[
     if tech.unit.ingredients then
         local inglist = {}
         for i, ingredient in pairs(tech.unit.ingredients) do
@@ -107,11 +108,12 @@ function data_parser:parse_tech(tech)
             end
         end
     end
-
+]]--
     -- Add any missing ingredients that we want present
-    for _, ingredient in pairs(config.TC_TECH_INGREDIENTS_PER_LEVEL[highest_science_pack]) do
-        tech_ingredients_to_use[ingredient.name or ingredient[1]] = ingredient.amount or ingredient[2]
-    end
+--    for _, ingredient in pairs(config.TC_TECH_INGREDIENTS_PER_LEVEL[highest_science_pack]) do
+--        tech_ingredients_to_use[ingredient.name or ingredient[1]] = ingredient.amount or ingredient[2]
+--    end
+--[[
     -- Add military ingredients if applicable
     if add_military_science then
         tech_ingredients_to_use["military-science-pack"] = config.TC_MIL_SCIENCE_PACK_COUNT_PER_LEVEL[highest_science_pack]
@@ -122,6 +124,7 @@ function data_parser:parse_tech(tech)
         tech.unit.ingredients[#tech.unit.ingredients+1] = {name = pack_name, amount = pack_amount}
     end
     	::continue::
+    ]]--
 end
 
 return data_parser
