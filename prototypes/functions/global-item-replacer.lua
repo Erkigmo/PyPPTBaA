@@ -1,8 +1,13 @@
+local dr = data.raw
+local dri = dr.item
+local drf = dr.fluid
+local drr = dr.recipe
+
 local function find_type(item)
-    if data.raw.item[item] then return 'item' end
-    if data.raw.fluid[item] then return 'fluid' end
+    if dri[item] then return 'item' end
+    if drf[item] then return 'fluid' end
     for prototype in pairs(defines.prototypes.item) do
-        if data.raw[prototype][item] then return prototype end
+        if dr[prototype][item] then return prototype end
     end
     return nil
 end
@@ -32,7 +37,7 @@ local function replace(product)
     end
     local new = old_to_new[product.name]
     product.name = new
-    if data.raw.fluid[new] then product.type = 'fluid' end
+    if drf[new] then product.type = 'fluid' end
 end
 
 local function process_recipe(recipe)
@@ -50,7 +55,7 @@ local function process_recipe(recipe)
 end
 
 local function finalize()
-    for name, recipe in pairs(data.raw.recipe) do
+    for name, recipe in pairs(drr) do
         if not blacklisted_recipes[name] then
             process_recipe(recipe)
             process_recipe(recipe.normal)
@@ -60,7 +65,7 @@ local function finalize()
 
     for old, _ in pairs(old_to_new) do
         local old_type = find_type(old)
-        local prototype = data.raw[old_type][old]
+        local prototype = dr[old_type][old]
         --[[
         if prototype.flags then
             table.insert(prototype.flags, 'hidden')
@@ -70,12 +75,24 @@ local function finalize()
         ]]--
         local place_result = prototype.place_result
         if place_result then
-            for name, type in pairs(data.raw) do
+            for name, type in pairs(dr) do
                 if name ~= old_type and type[place_result] then
                     --type[place_result] = nil
                     --prototype.place_result = nil
                     break
                 end
+            end
+        end
+    end
+end
+
+local function building_item_replacer(old, new)
+    if dri[old] ~= nil then
+        if dri[new] ~= nil then
+            local recipes = table.deepcopy(drr)
+            for recipe in pairs(recipes) do
+                fun.ingredient_replace(recipe, old, new)
+                fun.results_replacer(recipe, old, new)
             end
         end
     end
@@ -193,5 +210,8 @@ global_item_replacer('tin-plate','angels-plate-tin')
 --zinc
 global_item_replacer('ore-zinc','zinc-ore')
 global_item_replacer('zinc-plate','angels-plate-zinc')
+
+--buildings
+--building_item_replacer('basic-circuit-board', 'pcb1')
 
 finalize()
