@@ -212,6 +212,6 @@ global_item_replacer('ore-zinc','zinc-ore')
 global_item_replacer('zinc-plate','angels-plate-zinc')
 
 --buildings
---building_item_replacer('basic-circuit-board', 'pcb1')
+building_item_replacer('basic-circuit-board', 'pcb1')
 
 finalize()
