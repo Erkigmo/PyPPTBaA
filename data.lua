@@ -4,8 +4,7 @@ debugmode.logging = settings.startup["debug-logging"].value
 if debugmode.logging then 
 log(serpent.block(settings.startup)) 
 if not mods['aai-loaders'] then
-log(serpent.block(mods)) 
-end
+log(serpent.block(mods)) end 
 end
 
 local py_utils = require("__pypostprocessing__/prototypes/functions/utils")

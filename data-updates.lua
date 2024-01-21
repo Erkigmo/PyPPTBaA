@@ -40,10 +40,12 @@ end
 ----------------------------------------------------
 -- CACHE FILES
 ----------------------------------------------------
-
+--don't do these yet as they cause bugs
+--[[
 if register_cache_file ~= nil then
     register_cache_file({'pycoalprocessing', 'pyfusionenergy', 'pyindustry', 'pyrawores', 'pypetroleumhandling', 'pyalienlife', 'pyhightech', 'pyalternativeenergy', 'PyCoalTBaA', 'PyPPTBaA', 'bobsmodules4py'}, "__PyPPTBaA__/cached-configs/bobsmodules4py+pyalienlife+pyalternativeenergy+pycoalprocessing+PyCoalTBaA+pyfusionenergy+pyhightech+pyindustry+pypetroleumhandling+PyPPTBaA+pyrawores.lua")
     register_cache_file({'pycoalprocessing', 'pyfusionenergy', 'pyindustry', 'pyrawores', 'pypetroleumhandling', 'pyhightech', 'PyCoalTBaA', 'PyPPTBaA', 'bobsmodules4py'}, "__PyPPTBaA__/cached-configs/bobsmodules4py+pycoalprocessing+PyCoalTBaA+pyfusionenergy+pyhightech+pyindustry+pypetroleumhandling+PyPPTBaA+pyrawores.lua")
     register_cache_file({'pycoalprocessing', 'pyfusionenergy', 'pyindustry', 'PyCoalTBaA', 'PyPPTBaA', 'bobsmodules4py'}, "__PyPPTBaA__/cached-configs/bobsmodules4py+pycoalprocessing+PyCoalTBaA+pyfusionenergy+pyindustry+PyPPTBaA.lua")
     register_cache_file({'pycoalprocessing', 'PyCoalTBaA', 'PyPPTBaA', 'bobsmodules4py'}, "__PyPPTBaA__/cached-configs/bobsmodules4py+pycoalprocessing+PyCoalTBaA+PyPPTBaA.lua")
 end
+]]--
