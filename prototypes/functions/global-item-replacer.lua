@@ -14,6 +14,17 @@ end
 
 local blacklisted_recipes = {}
 local old_to_new = {}
+
+local function add_blacklist(blacklisted_recipes)
+    if type(blacklisted_recipes) ~= 'table' then
+        blacklisted_recipes = {blacklisted_recipes}
+    end
+
+    for b, blacklisted_recipe in pairs(blacklisted_recipes) do
+        blacklisted_recipes[blacklisted_recipe] = true
+    end
+end
+
 --replace an item/fluid in every recipes ingredients/results
 --best used to merge items that are duplicated in mods that should be the same
 local function global_item_replacer(old, new, blacklisted_recipe)
@@ -22,9 +33,6 @@ local function global_item_replacer(old, new, blacklisted_recipe)
         return
     end
     old_to_new[old] = new
-    if blacklisted_recipe then
-        blacklisted_recipes[blacklisted_recipe] = true
-    end
 end
 
 local function replace(product)
@@ -58,33 +66,46 @@ local function finalize()
     for name, recipe in pairs(drr) do
         if not blacklisted_recipes[name] then
             process_recipe(recipe)
-            process_recipe(recipe.normal)
-            process_recipe(recipe.expensive)
+            --process_recipe(recipe.normal)
+            --process_recipe(recipe.expensive)
         end
     end
 
     for old, _ in pairs(old_to_new) do
         local old_type = find_type(old)
         local prototype = dr[old_type][old]
-        --[[
-        if prototype.flags then
-            table.insert(prototype.flags, 'hidden')
-        else
-            prototype.flags = {'hidden'}
-        end
-        ]]--
         local place_result = prototype.place_result
         if place_result then
             for name, type in pairs(dr) do
                 if name ~= old_type and type[place_result] then
-                    --type[place_result] = nil
-                    --prototype.place_result = nil
                     break
                 end
             end
         end
     end
 end
+
+local function no_blacklist_finalize()
+    for name, recipe in pairs(drr) do
+        process_recipe(recipe)
+        process_recipe(recipe.normal)
+        process_recipe(recipe.expensive)
+    end
+
+    for old, _ in pairs(old_to_new) do
+        local old_type = find_type(old)
+        local prototype = dr[old_type][old]
+        local place_result = prototype.place_result
+        if place_result then
+            for name, type in pairs(dr) do
+                if name ~= old_type and type[place_result] then
+                    break
+                end
+            end
+        end
+    end
+end
+
 
 local function building_item_replacer(old, new)
     if dri[old] ~= nil then
@@ -169,12 +190,9 @@ global_item_replacer('bob-valve', 'py-check-valve')
 global_item_replacer('bob-overflow-valve', 'py-overflow-valve')
 global_item_replacer('bob-topup-valve', 'py-underflow-valve')
 global_item_replacer('construction-robot', 'py-construction-robot-01')
-global_item_replacer('washing-plant', 'washer')
 global_item_replacer('filtration-unit', 'carbon-filter')
 global_item_replacer('filtration-unit-2', 'carbon-filter-mk02')
 global_item_replacer('filtration-unit-3', 'carbon-filter-mk03')
-global_item_replacer('washing-plant', 'washer')
-global_item_replacer('washing-plant-2', 'washer-mk02')
 global_item_replacer('ore-floatation-cell', 'flotation-cell-mk01')
 global_item_replacer('ore-floatation-cell-2', 'flotation-cell-mk02')
 global_item_replacer('ore-floatation-cell-3', 'flotation-cell-mk03')
@@ -183,6 +201,7 @@ global_item_replacer('ore-leaching-plant-2', 'leaching-station-mk02')
 global_item_replacer('ore-leaching-plant-3', 'leaching-station-mk03')
 global_item_replacer('barreling-pump', 'barrel-machine-mk01')
 global_item_replacer('silicon','angels-mono-silicon')
+global_item_replacer('silicon-carbide','sic')
 global_item_replacer('wood-charcoal','charcoal-briquette')
 global_item_replacer('resin','saps')
 global_item_replacer('solid-soil','soil')
@@ -193,6 +212,8 @@ global_item_replacer('quartz-crucible','angels-quartz-crucible')
 global_item_replacer('tinned-copper-cable','tinned-cable')
 global_item_replacer('battery-equipment','battery-mk01')
 global_item_replacer('battery-mk2-equipment','nexelit-battery')
+global_item_replacer('liquid-naphtha','naphtha')
+global_item_replacer('residual-gas','gas-residual')
 --aluminium
 global_item_replacer('ore-aluminium','bauxite-ore')
 global_item_replacer('aluminium-plate','angels-plate-aluminium')
@@ -211,7 +232,15 @@ global_item_replacer('tin-plate','angels-plate-tin')
 global_item_replacer('ore-zinc','zinc-ore')
 global_item_replacer('zinc-plate','angels-plate-zinc')
 
---buildings
-building_item_replacer('basic-circuit-board', 'pcb1')
+--This will totally make it load faster, with no bugs whatsoever
+if blacklisted_recipes[1] ~= nil then
+    finalize()
+else
+    no_blacklist_finalize()
+end
 
-finalize()
+--buildings
+building_item_replacer('washer', 'washing-plant')
+building_item_replacer('washer-mk02', 'washing-plant-2')
+building_item_replacer('coke', 'solid-coke')
+building_item_replacer('solid-soil','soil')
