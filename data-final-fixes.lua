@@ -45,6 +45,8 @@ require('prototypes/functions/global-item-replacer')
 -- TECHNOLOGY CHANGES
 ----------------------------------------------------
 
+fun.global_prereq_replacer('electronics', 'vacuum-tube-electronics')
+
 if mods['bobtech'] 
 and data.raw.item["alien-artifact"]
 and data.raw.item["alien-artifact-blue"]
